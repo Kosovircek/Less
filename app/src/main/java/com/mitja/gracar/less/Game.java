@@ -6,9 +6,24 @@ import android.os.Bundle;
 
 public class Game extends Activity {
 
+    GameView mainView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(new GameView(this));
+        mainView = new GameView(this);
+        setContentView(mainView);
+    }
+
+    @Override
+    protected void onPause() {
+        mainView.pause();
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        mainView.resume();
+        super.onResume();
     }
 }

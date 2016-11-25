@@ -62,7 +62,7 @@ public class LessEngine {
         if((from[1] == to[1]) && (from[0] == to[0])){
             return "ERROR: Cant move to the same spot";
         }
-        if(((to[0]-from[0])+(to[1]-from[1])) >=2){
+        if((Math.abs(to[0]-from[0])+ Math.abs(to[1]-from[1])) >=2){
             return "ERROR: Invalid move";
         }
 
@@ -135,8 +135,8 @@ public class LessEngine {
             if((positionField[0][0]+positionField[1][0]+positionField[0][1]+positionField[1][1]) == 8){
                 return "Black is Winner!";
             }
-            else if((positionField[4][4]+positionField[4][5]+positionField[5][4]+positionField[5][5]) == 4){
-                return "White is Winner!";
+            else if((positionField[5][5] == 1) && (positionField[5][4] == 1) && (positionField[4][5] == 1) && (positionField[4][4] == 1)){
+                return "White is winner";
             }
             else{
                 return "Turn end";
@@ -146,8 +146,8 @@ public class LessEngine {
         if((positionField[0][0]+positionField[1][0]+positionField[0][1]+positionField[1][1]) == 8){
             return "Black is Winner!";
         }
-        else if((positionField[4][4]+positionField[4][5]+positionField[5][4]+positionField[5][5]) == 4){
-            return "White is Winner!";
+        else if((positionField[5][5] == 1) && (positionField[5][4] == 1) && (positionField[4][5] == 1) && (positionField[4][4] == 1)){
+            return "White is winner";
         }else{
             return "move sucsessfull";
         }
@@ -188,8 +188,8 @@ public class LessEngine {
                     if((positionField[0][0]+positionField[1][0]+positionField[0][1]+positionField[1][1]) == 8){
                         return "Black is Winner!";
                     }
-                    else if((positionField[4][4]+positionField[4][5]+positionField[5][4]+positionField[5][5]) == 4){
-                        return "White is Winner!";
+                    else if((positionField[5][5] == 1) && (positionField[5][4] == 1) && (positionField[4][5] == 1) && (positionField[4][4] == 1)){
+                        return "White is winner";
                     }else{
                         return "Turn end";
                     }
@@ -202,8 +202,8 @@ public class LessEngine {
         if((positionField[0][0]+positionField[1][0]+positionField[0][1]+positionField[1][1]) == 8){
             return "Black is Winner!";
         }
-        else if((positionField[4][4]+positionField[4][5]+positionField[5][4]+positionField[5][5]) == 4){
-            return "White is Winner!";
+        else if((positionField[5][5] == 1) && (positionField[5][4] == 1) && (positionField[4][5] == 1) && (positionField[4][4] == 1)){
+            return "White is winner";
         }else{
             return "ERROR: FULLCheck";
         }
@@ -383,6 +383,7 @@ public class LessEngine {
         return whosTurn;
         //return temp;
     }
+
 
 }
 

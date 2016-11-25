@@ -51,6 +51,15 @@ public class GameView extends SurfaceView {
 
     private long lastClick;
 
+    private boolean reset;
+    private long lastRefresh;
+    private int timesRefresh;
+
+    private boolean pieceSelected;
+    private Rect selectRect;
+    private Paint selectPaint;
+
+    private boolean running;
 
     public GameView(Context context) {
         super(context);
@@ -73,8 +82,10 @@ public class GameView extends SurfaceView {
 
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
+                gameLoopThread = new GameLoopThread(GameView.this);
                 gameLoopThread.setRunning(true);
                 gameLoopThread.start();
+                running = true;
             }
 
             @Override
@@ -83,6 +94,8 @@ public class GameView extends SurfaceView {
             }
         });
 
+
+        running = true;
 
         less = new LessEngine();
         choosenCards = new int[9];
@@ -128,48 +141,86 @@ public class GameView extends SurfaceView {
         statusReturn = "TEST TEST TEST";
 
         lastClick = 0;
+
+        reset = false;
+        lastRefresh = 0;
+        timesRefresh = 0;
+
+        pieceSelected = false;
+        selectPaint = new Paint();
+        selectPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        selectPaint.setARGB(100,100,10,0);
+        selectRect = new Rect(0,0,0,0);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        canvas.drawColor(Color.CYAN);
 
-        //canvas.drawBitmap(cards.get(2),new Rect(0,0,cards.get(1).getWidth(),cards.get(1).getWidth()),new Rect(0,(int)originY,cardWidth,(int)(originY+cardWidth)),null);
+        if(running) {
+            canvas.drawColor(Color.CYAN);
+
+            //canvas.drawBitmap(cards.get(2),new Rect(0,0,cards.get(1).getWidth(),cards.get(1).getWidth()),new Rect(0,(int)originY,cardWidth,(int)(originY+cardWidth)),null);
+
+            positions = less.getPositionField();
+
+            if (reset) {
+                first = true;
+                if (System.currentTimeMillis() - lastRefresh > 1) {
+                    lastRefresh = System.currentTimeMillis();
+                    timesRefresh += 1;
+
+                    less.reset();
+                    choosenCards = less.getChoosenCards();
 
 
+                    if (timesRefresh == 10) {
+                        reset = false;
+                        timesRefresh = 0;
+                    }
+                }
 
-        if(first){
-            first = false;
-            cardWidth = canvas.getWidth()/3;
-            originY = (float) (canvas.getHeight()/2 -(cardWidth*1.5));
 
-            playerWidth = canvas.getWidth()/6;
-            plOriginY = canvas.getHeight()/2 -(playerWidth*3);
+            }
 
-            for(int i=0; i<3; i++){
-                for(int j=0; j<3; j++) {
-                    cardsPos.add(new Rect(j*cardWidth,(int)(originY+(i*cardWidth)),(j*cardWidth)+cardWidth,(int) (originY+(i*cardWidth)+cardWidth)));
+
+            if (first) {
+                first = false;
+                cardWidth = canvas.getWidth() / 3;
+                originY = (float) (canvas.getHeight() / 2 - (cardWidth * 1.5));
+
+                playerWidth = canvas.getWidth() / 6;
+                plOriginY = canvas.getHeight() / 2 - (playerWidth * 3);
+
+                for (int i = 0; i < 3; i++) {
+                    for (int j = 0; j < 3; j++) {
+                        cardsPos.add(new Rect(j * cardWidth, (int) (originY + (i * cardWidth)), (j * cardWidth) + cardWidth, (int) (originY + (i * cardWidth) + cardWidth)));
+                    }
                 }
             }
-        }
 
-        for(int i=0; i<9; i++){
-            canvas.drawBitmap(cards.get(choosenCards[i]),src,cardsPos.get(i),null);
-        }
+            for (int i = 0; i < 9; i++) {
+                canvas.drawBitmap(cards.get(choosenCards[i]), src, cardsPos.get(i), null);
+            }
 
-        for(int i=0; i<6;i++){
-            for(int j=0; j<6; j++){
-                if(positions[i][j] == 1){
-                    canvas.drawBitmap(one,plSrc,new Rect(i*playerWidth,plOriginY+(j*playerWidth),i*playerWidth+playerWidth,plOriginY+(j*playerWidth)+playerWidth),null);
-                }else if(positions[i][j] == 2){
-                    canvas.drawBitmap(two,plSrc,new Rect(i*playerWidth,plOriginY+(j*playerWidth),i*playerWidth+playerWidth,plOriginY+(j*playerWidth)+playerWidth),null);
+            for (int i = 0; i < 6; i++) {
+                for (int j = 0; j < 6; j++) {
+                    if (positions[i][j] == 1) {
+                        canvas.drawBitmap(one, plSrc, new Rect(i * playerWidth, plOriginY + (j * playerWidth), i * playerWidth + playerWidth, plOriginY + (j * playerWidth) + playerWidth), null);
+                    } else if (positions[i][j] == 2) {
+                        canvas.drawBitmap(two, plSrc, new Rect(i * playerWidth, plOriginY + (j * playerWidth), i * playerWidth + playerWidth, plOriginY + (j * playerWidth) + playerWidth), null);
+                    }
                 }
             }
-        }
 
-        canvas.drawText("TURN: "+less.getTurn(),50,(int) (canvas.getHeight()*0.1),textPaint);
-        canvas.drawText("MOVES: "+less.getMoves(),(int)(canvas.getWidth()/2),(int) (canvas.getHeight()*0.1),textPaint);
-        canvas.drawText("Status: "+statusReturn,50,(int) (canvas.getHeight()*0.15),textPaint);
+            canvas.drawText("TURN: " + less.getTurn(), 50, (int) (canvas.getHeight() * 0.1), textPaint);
+            canvas.drawText("MOVES: " + less.getMoves(), (int) (canvas.getWidth() / 2), (int) (canvas.getHeight() * 0.1), textPaint);
+            canvas.drawText("Status: " + statusReturn, 50, (int) (canvas.getHeight() * 0.15), textPaint);
+            canvas.drawText("RESET", canvas.getWidth() / 2 - 20, (float) (originY + 3 * cardWidth + cardWidth * 0.5), textPaint);
+
+            if (pieceSelected) {
+                canvas.drawRect(selectRect, selectPaint);
+            }
+        }
 
     }
 
@@ -177,15 +228,43 @@ public class GameView extends SurfaceView {
     public boolean onTouchEvent(MotionEvent event) {
         if (System.currentTimeMillis() - lastClick > 100) {
             lastClick = System.currentTimeMillis();
-            if(firsttouch){
-                from = new int[] {(int) (event.getX()/playerWidth), (int) ((event.getY()-plOriginY)/playerWidth)};
-                firsttouch = false;
-            }else{
-                to = new int[] {(int) (event.getX()/playerWidth), (int) ((event.getY()-plOriginY)/playerWidth)};
-                statusReturn = less.move(from,to);
-                firsttouch = true;
+
+            //RESET
+            if(event.getY() > ((originY+cardWidth*3)+cardWidth*0.2)){
+                reset = true;
+                pieceSelected = false;
+            }
+            else {
+
+                if (firsttouch) {
+                    from = new int[]{(int) (event.getX() / playerWidth), (int) ((event.getY() - plOriginY) / playerWidth)};
+                    firsttouch = false;
+
+                    pieceSelected = true;
+                    selectRect = new Rect(from[0]*playerWidth,plOriginY+(from[1]*playerWidth),from[0]*playerWidth+playerWidth,plOriginY+(from[1]*playerWidth)+playerWidth);
+
+                } else {
+
+                    to = new int[]{(int) (event.getX() / playerWidth), (int) ((event.getY() - plOriginY) / playerWidth)};
+
+                    statusReturn = less.move(from, to);
+                    firsttouch = true;
+
+                    pieceSelected = false;
+                }
             }
         }
         return true;
+    }
+
+    //Da z ustavitvijo Activitja ustavim tudi poseben Thread za risanje SurfaceViewa (Drugače aplikacija zablokira zara null reference)
+    public void pause(){
+        running = false;
+        gameLoopThread.setRunning(false);
+    }
+
+    public void resume(){
+        gameLoopThread.setRunning(true);
+
     }
 }

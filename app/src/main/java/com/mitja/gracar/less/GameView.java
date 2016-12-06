@@ -65,6 +65,10 @@ public class GameView extends SurfaceView {
     private ButtonM resetButton;
     private OverlayM overlayM;
 
+    boolean menuUp;
+
+    ButtonM menuButton;
+
     public GameView(Context context) {
         super(context);
         gameLoopThread = new GameLoopThread(this);
@@ -157,8 +161,9 @@ public class GameView extends SurfaceView {
         selectRect = new Rect(0,0,0,0);
 
         playing = false;
-
+        menuUp = true;
         resetButton = new ButtonM(BitmapFactory.decodeResource(getResources(),R.drawable.reseton));
+        menuButton = new ButtonM(BitmapFactory.decodeResource(getResources(),R.drawable.reseton));
     }
 
     @Override
@@ -169,7 +174,7 @@ public class GameView extends SurfaceView {
         positions = less.getPositionField();
 
         if (reset) {
-            first = true;
+            //first = true;
             if (System.currentTimeMillis() - lastRefresh > 1) {
                 lastRefresh = System.currentTimeMillis();
                 timesRefresh += 1;
@@ -202,8 +207,9 @@ public class GameView extends SurfaceView {
                 }
             }
 
-            resetButton.setPosition((float) (originY + cardWidth * 3.3), canvas);
-            overlayM = new OverlayM(canvas, BitmapFactory.decodeResource(getResources(),R.drawable.lesslogo));
+            resetButton.setPosition((float) (originY + cardWidth * 3.5), canvas);
+            overlayM = new OverlayM(canvas, BitmapFactory.decodeResource(getResources(),R.drawable.lesslogo),BitmapFactory.decodeResource(getResources(),R.drawable.playon));
+            menuButton.setPosition(10, canvas);
         }
 
         if(playing) {
@@ -237,10 +243,16 @@ public class GameView extends SurfaceView {
                 }
 
                 resetButton.draw();
+                menuButton.draw();
             }
-        }else{
+        }
+        if(overlayM.animationOn() && !menuUp){
             overlayM.fadeOut();
         }
+        if(menuUp){
+            overlayM.draw();
+        }
+
 
     }
 
@@ -273,6 +285,16 @@ public class GameView extends SurfaceView {
             //Touch reset button
             if(resetButton.getTouch(event.getX(),event.getY())){
                 reset = true;
+            }
+            if(overlayM.playPressed(event.getX(),event.getY())){
+                playing = true;
+                menuUp = false;
+                reset = true;
+            }
+            if(menuButton.getTouch(event.getX(),event.getY())){
+                playing = false;
+                menuUp = true;
+                overlayM.resetMenu();
             }
         }
         return true;

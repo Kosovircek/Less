@@ -50,11 +50,15 @@ public class LessEngine {
 
         //DEFINE 0 = Y-os     1 = X-os
 
-        if(positionField[from[0]][from[1]] == 0){
-            return "ERROR: No piece on that position";
-        }
+
         if((to[0] < 0)||(to[0] > 6)||(to[1] < 0)||(to[1] > 6)){
             return "ERROR: Move out of bounds";
+        }
+        if((from[0] < 0)||(from[0] > 6)||(from[1] < 0)||(from[1] > 6)){
+            return "ERROR: Out of bounds";
+        }
+        if(positionField[from[0]][from[1]] == 0){
+            return "ERROR: No piece on that position";
         }
         if((positionField[from[0]][from[1]] - whosTurn) != 0){
             return "ERROR: Not Your turn";

@@ -157,7 +157,7 @@ public class GameView extends SurfaceView {
     protected void onDraw(Canvas canvas) {
 
         if(running) {
-            canvas.drawColor(Color.CYAN);
+            canvas.drawColor(Color.rgb(201,216,225));
 
             //canvas.drawBitmap(cards.get(2),new Rect(0,0,cards.get(1).getWidth(),cards.get(1).getWidth()),new Rect(0,(int)originY,cardWidth,(int)(originY+cardWidth)),null);
 

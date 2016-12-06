@@ -286,7 +286,7 @@ public class GameView extends SurfaceView {
             if(resetButton.getTouch(event.getX(),event.getY())){
                 reset = true;
             }
-            if(overlayM.playPressed(event.getX(),event.getY())){
+            if((overlayM.playPressed(event.getX(),event.getY())) && menuUp){
                 playing = true;
                 menuUp = false;
                 reset = true;

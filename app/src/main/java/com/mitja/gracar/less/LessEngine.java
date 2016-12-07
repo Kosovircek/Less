@@ -128,6 +128,7 @@ public class LessEngine {
         positionField[to[0]][to[1]] = whosTurn;
 
 
+
         if(movesLeft == 0){
             if(whosTurn == 1){
                 whosTurn = 2;
@@ -387,6 +388,7 @@ public class LessEngine {
         return whosTurn;
         //return temp;
     }
+
 
 
 }

@@ -7,7 +7,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -68,6 +67,14 @@ public class GameView extends SurfaceView {
     boolean menuUp;
 
     ButtonM menuButton;
+
+    Bitmap playerTileBit;
+    Rect tileSrc;
+    Rect tileDst1;
+    Rect tileDst2;
+
+    Rect whiteRect;
+    Rect blackRect;
 
     public GameView(Context context) {
         super(context);
@@ -142,9 +149,9 @@ public class GameView extends SurfaceView {
         firsttouch = true;
 
         textPaint = new Paint();
-        textPaint.setColor(Color.BLACK);
+        textPaint.setColor(Color.BLUE);
         textPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-        textPaint.setTextSize(50);
+        textPaint.setTextSize(100);
 
         statusReturn = "TEST TEST TEST";
 
@@ -162,8 +169,11 @@ public class GameView extends SurfaceView {
 
         playing = false;
         menuUp = true;
-        resetButton = new ButtonM(BitmapFactory.decodeResource(getResources(),R.drawable.reseton));
+        //resetButton = new ButtonM(BitmapFactory.decodeResource(getResources(),R.drawable.reseton));
         menuButton = new ButtonM(BitmapFactory.decodeResource(getResources(),R.drawable.reseton));
+
+
+        playerTileBit = BitmapFactory.decodeResource(getResources(),R.drawable.playertile);
     }
 
     @Override
@@ -207,9 +217,16 @@ public class GameView extends SurfaceView {
                 }
             }
 
-            resetButton.setPosition((float) (originY + cardWidth * 3.5), canvas);
+            //resetButton.setPosition((float) (originY + cardWidth * 3.5), canvas);
             overlayM = new OverlayM(canvas, BitmapFactory.decodeResource(getResources(),R.drawable.lesslogo),BitmapFactory.decodeResource(getResources(),R.drawable.playon));
             menuButton.setPosition(10, canvas);
+
+            tileDst1 = new Rect(0,0,canvas.getWidth(),(int) (canvas.getHeight()/2-cardWidth*1.5));
+            tileDst2 = new Rect(0,(int) (canvas.getHeight()/2 +cardWidth*1.5),canvas.getWidth(),canvas.getHeight());
+            tileSrc = new Rect(0,0,playerTileBit.getWidth(),playerTileBit.getHeight());
+
+            whiteRect = new Rect(0,0,(int) (canvas.getHeight()/2-cardWidth*1.5),(int) (canvas.getHeight()/2-cardWidth*1.5));
+            blackRect = new Rect((int) (canvas.getWidth()-(canvas.getHeight()/2-cardWidth*1.5)),(int) (canvas.getHeight()/2+cardWidth*1.5),canvas.getWidth(),canvas.getHeight());
         }
 
         if(playing) {
@@ -234,16 +251,31 @@ public class GameView extends SurfaceView {
                     }
                 }
 
-                canvas.drawText("TURN: " + less.getTurn(), 50, (int) (canvas.getHeight() * 0.1), textPaint);
-                canvas.drawText("MOVES: " + less.getMoves(), (int) (canvas.getWidth() / 2), (int) (canvas.getHeight() * 0.1), textPaint);
-                canvas.drawText("Status: " + statusReturn, 50, (int) (canvas.getHeight() * 0.15), textPaint);
+
 
                 if (pieceSelected) {
                     canvas.drawRect(selectRect, selectPaint);
                 }
 
-                resetButton.draw();
-                menuButton.draw();
+                canvas.drawBitmap(playerTileBit,tileSrc, tileDst1,null);
+                canvas.drawBitmap(playerTileBit,tileSrc, tileDst2,null);
+
+                canvas.drawBitmap(one,plSrc,whiteRect,null);
+                canvas.drawBitmap(two,plSrc,blackRect,null);
+
+                if(less.getTurn() == 1) {
+                    canvas.drawText("MOVES: " + less.getMoves(), (int) (canvas.getHeight() / 2 - cardWidth * 1.5) + 150, (int) (canvas.getHeight() / 2 - cardWidth * 1.5) / 2 + 50, textPaint);
+                    canvas.drawText("MOVES: " + "0", 250, (int) (canvas.getHeight() - ((canvas.getHeight() / 2 - cardWidth * 1.5) / 2)) + 50, textPaint);
+                }
+                if(less.getTurn() == 2
+                        ) {
+                    canvas.drawText("MOVES: " + "0", (int) (canvas.getHeight() / 2 - cardWidth * 1.5) + 150, (int) (canvas.getHeight() / 2 - cardWidth * 1.5) / 2 + 50, textPaint);
+                    canvas.drawText("MOVES: " + less.getMoves(), 250, (int) (canvas.getHeight() - ((canvas.getHeight() / 2 - cardWidth * 1.5) / 2)) + 50, textPaint);
+                }
+                //canvas.drawText("Status: " + statusReturn, 50, (int) (canvas.getHeight() * 0.15), textPaint);
+
+                //resetButton.draw();
+                //menuButton.draw();
             }
         }
         if(overlayM.animationOn() && !menuUp){
@@ -283,9 +315,11 @@ public class GameView extends SurfaceView {
                 }
             }
             //Touch reset button
+            /*
             if(resetButton.getTouch(event.getX(),event.getY())){
                 reset = true;
             }
+            */
             if((overlayM.playPressed(event.getX(),event.getY())) && menuUp){
                 playing = true;
                 menuUp = false;

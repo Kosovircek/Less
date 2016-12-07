@@ -26,4 +26,10 @@ public class Game extends Activity {
         mainView.resume();
         super.onResume();
     }
+
+    @Override
+    public void onBackPressed() {
+
+        mainView.onBackPressed();
+    }
 }

@@ -320,16 +320,19 @@ public class GameView extends SurfaceView {
                 reset = true;
             }
             */
+
             if((overlayM.playPressed(event.getX(),event.getY())) && menuUp){
                 playing = true;
                 menuUp = false;
                 reset = true;
             }
+            /*
             if(menuButton.getTouch(event.getX(),event.getY())){
                 playing = false;
                 menuUp = true;
                 overlayM.resetMenu();
             }
+            */
         }
         return true;
     }
@@ -344,4 +347,16 @@ public class GameView extends SurfaceView {
         gameLoopThread.setRunning(true);
 
     }
+
+    public void onBackPressed(){
+        if(!menuUp){
+            playing = false;
+            menuUp = true;
+            overlayM.resetMenu();
+        }else{
+            playing = true;
+            menuUp = false;
+        }
+    }
+
 }

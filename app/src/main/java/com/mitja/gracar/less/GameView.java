@@ -276,6 +276,12 @@ public class GameView extends SurfaceView {
 
                 //resetButton.draw();
                 //menuButton.draw();
+                if(statusReturn == "Black is Winner!"){
+                    less.setTurn(1);
+                }
+                if(statusReturn == "White is winner"){
+                    less.setTurn(2);
+                }
             }
         }
         if(overlayM.animationOn() && !menuUp){

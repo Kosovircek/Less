@@ -389,6 +389,10 @@ public class LessEngine {
         //return temp;
     }
 
+    public void setTurn(int turn){
+        whosTurn = turn;
+        movesLeft = 3;
+    }
 
 
 }
